@@ -1,57 +1,105 @@
-import MessageListItem from '../components/MessageListItem';
-import { useState } from 'react';
-import { Message, getMessages } from '../data/messages';
+import React, { useEffect, useState } from "react";
 import {
+  IonCard,
+  IonChip,
   IonContent,
   IonHeader,
+  IonItem,
   IonList,
+  IonLoading,
   IonPage,
-  IonRefresher,
-  IonRefresherContent,
   IonTitle,
   IonToolbar,
-  useIonViewWillEnter
-} from '@ionic/react';
-import './Home.css';
+} from "@ionic/react";
+
+import type { Character } from "../models/character.model";
+import { characterService } from "../services/character.service";
+import "./Home.css";
 
 const Home: React.FC = () => {
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const loadCharacters = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
-  });
-
-  const refresh = (e: CustomEvent) => {
-    setTimeout(() => {
-      e.detail.complete();
-    }, 3000);
+      const data = await characterService.getCharacters(1);
+      setCharacters(data);
+    } catch {
+      setError("Error al cargar personajes");
+      setCharacters([]);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadCharacters();
+  }, []);
 
   return (
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Inbox</IonTitle>
+          <IonTitle>The Simpsons</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent fullscreen>
-        <IonRefresher slot="fixed" onIonRefresh={refresh}>
-          <IonRefresherContent></IonRefresherContent>
-        </IonRefresher>
+        <IonLoading isOpen={loading} message="Cargando personajes..." />
 
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">
-              Inbox
-            </IonTitle>
-          </IonToolbar>
-        </IonHeader>
+        <div className="page-wrap">
+          {error && (
+            <div className="helper-text">
+              <p>{error}</p>
+            </div>
+          )}
 
-        <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
-        </IonList>
+          {!loading && !error && characters.length === 0 && (
+            <div className="helper-text">
+              <p>No hay personajes disponibles.</p>
+            </div>
+          )}
+
+          {!loading && !error && characters.length > 0 && (
+            <IonList>
+              {characters.map((char) => (
+                <IonItem key={char.id} lines="none" className="character-item">
+                  <IonCard className="character-card">
+                    <div className="character-row">
+                      <div className="character-avatar">
+                        <img
+                          src={char.portrait_path}
+                          alt={char.name}
+                          loading="lazy"
+                        />
+                      </div>
+
+                      <div className="character-main">
+                        <p className="character-name">{char.name}</p>
+                        <p className="character-sub">
+                          Ocupación: {char.occupation}
+                        </p>
+
+                        <div className="character-meta">
+                          <IonChip className="meta-chip">
+                            Estado: {char.status}
+                          </IonChip>
+                          <IonChip className="meta-chip">
+                            Edad: {char.age ?? "N/A"}
+                          </IonChip>
+                        </div>
+                      </div>
+                    </div>
+                  </IonCard>
+                </IonItem>
+              ))}
+            </IonList>
+          )}
+        </div>
       </IonContent>
     </IonPage>
   );
