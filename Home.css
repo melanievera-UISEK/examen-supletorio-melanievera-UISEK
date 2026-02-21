@@ -1,0 +1,78 @@
+.page-wrap {
+  padding: 12px;
+}
+
+.character-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  margin-bottom: 12px;
+}
+
+.character-card {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.character-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.character-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.character-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.character-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.character-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.character-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.meta-chip {
+  height: 26px;
+  font-size: 12px;
+  --border-radius: 999px;
+}
+
+.helper-text {
+  padding: 16px;
+  opacity: 0.9;
+}
